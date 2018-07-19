@@ -9,18 +9,28 @@ Pod::Spec.new do |s|
   s.authors = { 'Alamofire Software Foundation' => 'info@alamofire.org' }
   s.source = { :git => 'https://github.com/smartmobilefactory/SMF-Alamofire.git', :tag => "releases/#{s.version}" }
 
-  s.source_files = 'StaticFrameworks/StaticFrameworks.swift'
+  s.subspec "Static" do |subspec|
+    s.source_files = 'StaticFrameworks/StaticFrameworks.swift'
 
-  s.ios.deployment_target = '8.0'
-  s.ios.vendored_frameworks = 'StaticFrameworks/iOS/Alamofire.framework'
+    subspec.ios.deployment_target = '8.0'
+    subspec.ios.vendored_frameworks = 'StaticFrameworks/Static/iOS/Alamofire.framework'
+    subspec.osx.deployment_target = '10.10'
+    subspec.osx.vendored_frameworks = 'StaticFrameworks/Static/Mac/Alamofire.framework'
+    subspec.tvos.deployment_target = '9.0'
+    subspec.tvos.vendored_frameworks = 'StaticFrameworks/Static/tvOS/Alamofire.framework'
+    subspec.watchos.deployment_target = '2.0'
+    subspec.watchos.vendored_frameworks = 'StaticFrameworks/Static/watchOS/Alamofire.framework'
+  end
 
-  s.osx.deployment_target = '10.10'
-  s.osx.vendored_frameworks = 'StaticFrameworks/Mac/Alamofire.framework'
-
-  s.tvos.deployment_target = '9.0'
-  s.tvos.vendored_frameworks = 'StaticFrameworks/tvOS/Alamofire.framework'
-
-  s.watchos.deployment_target = '2.0'
-  s.watchos.vendored_frameworks = 'StaticFrameworks/watchOS/Alamofire.framework'
+  s.subspec "Dynamic" do |subspec|
+    subspec.ios.deployment_target = '8.0'
+    subspec.ios.vendored_frameworks = 'StaticFrameworks/Dynamic/iOS/Alamofire.framework'
+    subspec.osx.deployment_target = '10.10'
+    subspec.osx.vendored_frameworks = 'StaticFrameworks/Dynamic/Mac/Alamofire.framework'
+    subspec.tvos.deployment_target = '9.0'
+    subspec.tvos.vendored_frameworks = 'StaticFrameworks/Dynamic/tvOS/Alamofire.framework'
+    subspec.watchos.deployment_target = '2.0'
+    subspec.watchos.vendored_frameworks = 'StaticFrameworks/Dynamic/watchOS/Alamofire.framework'
+  end
 
 end

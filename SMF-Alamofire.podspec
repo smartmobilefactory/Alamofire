@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.ios.vendored_frameworks = 'StaticFrameworks/iOS/Alamofire.framework'
 
   s.osx.deployment_target = '10.10'
-  s.osx.vendored_frameworks = 'StaticFrameworks/macOS/Alamofire.framework'
+  s.osx.vendored_frameworks = 'StaticFrameworks/Mac/Alamofire.framework'
 
   s.tvos.deployment_target = '9.0'
   s.tvos.vendored_frameworks = 'StaticFrameworks/tvOS/Alamofire.framework'

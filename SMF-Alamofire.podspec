@@ -11,28 +11,25 @@ Pod::Spec.new do |s|
 
   s.static_framework = true
 
-  s.subspec "Static" do |subspec|
-    subspec.source_files = 'StaticFrameworks/StaticFrameworks.swift'
+  s.ios.deployment_target = '8.0'
+  s.osx.deployment_target = '10.10'
+  s.tvos.deployment_target = '9.0'
+  s.watchos.deployment_target = '2.0'
 
-    subspec.ios.deployment_target = '8.0'
-    subspec.ios.vendored_frameworks = 'StaticFrameworks/Static/iOS/Alamofire.framework'
-    subspec.osx.deployment_target = '10.10'
-    subspec.osx.vendored_frameworks = 'StaticFrameworks/Static/Mac/Alamofire.framework'
-    subspec.tvos.deployment_target = '9.0'
-    subspec.tvos.vendored_frameworks = 'StaticFrameworks/Static/tvOS/Alamofire.framework'
-    subspec.watchos.deployment_target = '2.0'
-    subspec.watchos.vendored_frameworks = 'StaticFrameworks/Static/watchOS/Alamofire.framework'
+  s.source_files = 'Frameworks/Frameworks.swift'
+
+  s.subspec "Static" do |subspec|
+    subspec.ios.vendored_frameworks = 'Frameworks/Static/iOS/Alamofire.framework'
+    subspec.osx.vendored_frameworks = 'Frameworks/Static/Mac/Alamofire.framework'
+    subspec.tvos.vendored_frameworks = 'Frameworks/Static/tvOS/Alamofire.framework'
+    subspec.watchos.vendored_frameworks = 'Frameworks/Static/watchOS/Alamofire.framework'
   end
 
   s.subspec "Dynamic" do |subspec|
-    subspec.ios.deployment_target = '8.0'
-    subspec.ios.vendored_frameworks = 'StaticFrameworks/Dynamic/iOS/Alamofire.framework'
-    subspec.osx.deployment_target = '10.10'
-    subspec.osx.vendored_frameworks = 'StaticFrameworks/Dynamic/Mac/Alamofire.framework'
-    subspec.tvos.deployment_target = '9.0'
-    subspec.tvos.vendored_frameworks = 'StaticFrameworks/Dynamic/tvOS/Alamofire.framework'
-    subspec.watchos.deployment_target = '2.0'
-    subspec.watchos.vendored_frameworks = 'StaticFrameworks/Dynamic/watchOS/Alamofire.framework'
+    subspec.ios.vendored_frameworks = 'Frameworks/Dynamic/iOS/Alamofire.framework'
+    subspec.osx.vendored_frameworks = 'Frameworks/Dynamic/Mac/Alamofire.framework'
+    subspec.tvos.vendored_frameworks = 'Frameworks/Dynamic/tvOS/Alamofire.framework'
+    subspec.watchos.vendored_frameworks = 'Frameworks/Dynamic/watchOS/Alamofire.framework'
   end
 
 end

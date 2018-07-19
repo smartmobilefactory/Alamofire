@@ -9,8 +9,10 @@ Pod::Spec.new do |s|
   s.authors = { 'Alamofire Software Foundation' => 'info@alamofire.org' }
   s.source = { :git => 'https://github.com/smartmobilefactory/SMF-Alamofire.git', :tag => "releases/#{s.version}" }
 
+  s.static_framework = true
+
   s.subspec "Static" do |subspec|
-    s.source_files = 'StaticFrameworks/StaticFrameworks.swift'
+    subspec.source_files = 'StaticFrameworks/StaticFrameworks.swift'
 
     subspec.ios.deployment_target = '8.0'
     subspec.ios.vendored_frameworks = 'StaticFrameworks/Static/iOS/Alamofire.framework'

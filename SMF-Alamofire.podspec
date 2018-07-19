@@ -18,6 +18,8 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Frameworks/Frameworks.swift'
 
+  s.default_subspecs = "Dynamic"
+
   s.subspec "Static" do |subspec|
     subspec.ios.vendored_frameworks = 'Frameworks/Static/iOS/Alamofire.framework'
     subspec.osx.vendored_frameworks = 'Frameworks/Static/Mac/Alamofire.framework'

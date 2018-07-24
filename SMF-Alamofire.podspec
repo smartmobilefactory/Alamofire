@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
 
   s.static_framework = true
 
-  s.source_files = 'Frameworks/Frameworks.swift'
+  # s.source_files = 'Frameworks/Frameworks.swift'
 
   s.ios.vendored_frameworks = 'Frameworks/Static/iOS/Alamofire.framework'
   s.osx.vendored_frameworks = 'Frameworks/Static/Mac/Alamofire.framework'

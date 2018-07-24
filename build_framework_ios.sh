@@ -87,6 +87,7 @@ function create_universal_file() {
 	# Because `lipo` does not create the output file,
 	# We need to copy the framework structure into the universal folder.
 	# The last build contains the complete structure (here 'armv7s').
+
 	$CP_B -R "${IPHONE_DEVICE_BUILD_DIR}/armv7s/${PRODUCT_NAME}.framework" "${UNIVERSAL_OUTPUTFOLDER}/${PRODUCT_NAME}.framework"
 
 	echo "Create an universal file to combine all architectures."
@@ -118,6 +119,10 @@ function validate_frameworks() {
 	./validate_static_frameworks.sh iOS
 }
 
+function copy_swiftmodule() {
+	./copy_swiftmodule.sh
+}
+
 ### Script Logic
 
 # Validate 'Generic iOS Device' target.
@@ -142,3 +147,6 @@ create_universal_file
 
 # Validate Frameworks.
 validate_frameworks
+
+# Copy the swiftmodule and swiftdoc for all available architectures.
+copy_swiftmodule

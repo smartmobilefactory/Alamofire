@@ -825,6 +825,8 @@
 				4CF626EB1BA7CB3E0011A099 /* Frameworks */,
 				4CF626EC1BA7CB3E0011A099 /* Headers */,
 				4CF626ED1BA7CB3E0011A099 /* Resources */,
+				75436E1821071ED4006B46A1 /* Create Universal Framework */,
+				751D755F2107250900D45D35 /* Validate Universal Framework */,
 			);
 			buildRules = (
 			);
@@ -861,6 +863,8 @@
 				4DD67C071A5C55C900ED2280 /* Frameworks */,
 				4DD67C081A5C55C900ED2280 /* Headers */,
 				4DD67C091A5C55C900ED2280 /* Resources */,
+				75436E1621071CDD006B46A1 /* Create Universal Framework */,
+				751D75602107284900D45D35 /* Validate Universal Framework */,
 			);
 			buildRules = (
 			);
@@ -879,6 +883,8 @@
 				E4202FD91B667AA100C997FB /* Frameworks */,
 				E4202FDA1B667AA100C997FB /* Headers */,
 				E4202FDC1B667AA100C997FB /* Resources */,
+				75436E1921071EE3006B46A1 /* Create Universal Framework */,
+				751D7561210728A500D45D35 /* Validate Universal Framework */,
 			);
 			buildRules = (
 			);
@@ -897,6 +903,8 @@
 				F8111E2F19A95C8B0040E7D1 /* Frameworks */,
 				F8111E3019A95C8B0040E7D1 /* Headers */,
 				F8111E3119A95C8B0040E7D1 /* Resources */,
+				75436E1721071EB9006B46A1 /* Create Universal Framework */,
+				751D7562210728C500D45D35 /* Validate Universal Framework */,
 			);
 			buildRules = (
 			);
@@ -1179,6 +1187,118 @@
 			shellPath = /bin/sh;
 			shellScript = "#!/bin/sh\ndirectories=(Example Source Tests)\n\nfor directory in \"${directories[@]}\"\ndo\n    echo \"Cleaning whitespace in directory: $directory\"\n    find $directory -iregex '.*\\.swift' -exec sed -E -i '' -e 's/[[:blank:]]*$//' {} \\;\ndone\n";
 		};
+		751D755F2107250900D45D35 /* Validate Universal Framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Validate Universal Framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${SRCROOT}/validate_static_frameworks.sh tvOS";
+		};
+		751D75602107284900D45D35 /* Validate Universal Framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Validate Universal Framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${SRCROOT}/validate_static_frameworks.sh macOS\n";
+		};
+		751D7561210728A500D45D35 /* Validate Universal Framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Validate Universal Framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${SRCROOT}/validate_static_frameworks.sh watchOS";
+		};
+		751D7562210728C500D45D35 /* Validate Universal Framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Validate Universal Framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${SRCROOT}/validate_static_frameworks.sh iOS";
+		};
+		75436E1621071CDD006B46A1 /* Create Universal Framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Create Universal Framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -xe\nexport BUILD_PATH=\"${SRCROOT}/Frameworks/Static/Mac/\";\nrm -rf \"${BUILD_PATH}\";\nmkdir -p \"${BUILD_PATH}\";\nditto \"${BUILT_PRODUCTS_DIR}\" \"${BUILD_PATH}\";";
+		};
+		75436E1721071EB9006B46A1 /* Create Universal Framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Create Universal Framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -xe\nexport BUILD_PATH=\"${SRCROOT}/Frameworks/Static/iOS/\";\nrm -rf \"${BUILD_PATH}\";\nmkdir -p \"${BUILD_PATH}\";\nditto \"${BUILT_PRODUCTS_DIR}\" \"${BUILD_PATH}\";";
+		};
+		75436E1821071ED4006B46A1 /* Create Universal Framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Create Universal Framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -xe\nexport BUILD_PATH=\"${SRCROOT}/Frameworks/Static/tvOS/\";\nrm -rf \"${BUILD_PATH}\";\nmkdir -p \"${BUILD_PATH}\";\nditto \"${BUILT_PRODUCTS_DIR}\" \"${BUILD_PATH}\";";
+		};
+		75436E1921071EE3006B46A1 /* Create Universal Framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Create Universal Framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -xe\nexport BUILD_PATH=\"${SRCROOT}/Frameworks/Static/watchOS/\";\nrm -rf \"${BUILD_PATH}\";\nmkdir -p \"${BUILD_PATH}\";\nditto \"${BUILT_PRODUCTS_DIR}\" \"${BUILD_PATH}\";";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -1405,6 +1525,7 @@
 				INFOPLIST_FILE = "Source/Info-tvOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = org.alamofire.Alamofire;
 				PRODUCT_NAME = Alamofire;
 				SDKROOT = appletvos;
@@ -1424,6 +1545,7 @@
 				INFOPLIST_FILE = "Source/Info-tvOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = org.alamofire.Alamofire;
 				PRODUCT_NAME = Alamofire;
 				SDKROOT = appletvos;
@@ -1468,6 +1590,7 @@
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = org.alamofire.Alamofire;
 				PRODUCT_NAME = Alamofire;
 				SDKROOT = macosx;
@@ -1487,6 +1610,7 @@
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = org.alamofire.Alamofire;
 				PRODUCT_NAME = Alamofire;
 				SDKROOT = macosx;
@@ -1505,6 +1629,7 @@
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = org.alamofire.Alamofire;
 				PRODUCT_NAME = Alamofire;
 				SDKROOT = watchos;
@@ -1524,6 +1649,7 @@
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = org.alamofire.Alamofire;
 				PRODUCT_NAME = Alamofire;
 				SDKROOT = watchos;
@@ -1670,6 +1796,7 @@
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = org.alamofire.Alamofire;
 				PRODUCT_NAME = Alamofire;
 				SDKROOT = iphoneos;
@@ -1688,6 +1815,7 @@
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = org.alamofire.Alamofire;
 				PRODUCT_NAME = Alamofire;
 				SDKROOT = iphoneos;

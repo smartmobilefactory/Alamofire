@@ -41,6 +41,20 @@ function copy_swiftmodule_paths() {
 	fi
 }
 
+function copy_modulemap_paths() {
+	DESTINATION=$1
+	SOURCE=$2
+	ARCH=$3
+
+	SWIFT_MODULEMAP="${SOURCE}/${ARCH}/${PROJECT_NAME}.framework/Modules/module.modulemap"
+	if [ -f "${SWIFT_MODULEMAP}" ]; then
+		echo "  GOOD: Found modulemap for architecture ${ARCH} at: ${SWIFT_MODULEMAP}"
+		cp $SWIFT_MODULEMAP $DESTINATION
+	else
+		echo "WARNING: No modulemap found for architecture: ${ARCH}"
+	fi
+}
+
 function copy_swiftmodule() {
 
 	# Create clean destination folder
@@ -56,7 +70,24 @@ function copy_swiftmodule() {
 	copy_swiftmodule_paths $DESTINATION $IPHONE_SIMULATOR_BUILD_DIR "i386"
 }
 
+function copy_modulemap() {
+
+	# Create clean destination folder
+	DESTINATION="${UNIVERSAL_OUTPUTFOLDER}/${PRODUCT_NAME}.framework/Modules"
+	echo "CREATING: ${DESTINATION} ..."
+	$MKDIR_B -p "${DESTINATION}"
+
+	copy_modulemap_paths $DESTINATION $IPHONE_DEVICE_BUILD_DIR "arm64"
+	copy_modulemap_paths $DESTINATION $IPHONE_DEVICE_BUILD_DIR "armv7"
+	copy_modulemap_paths $DESTINATION $IPHONE_DEVICE_BUILD_DIR "armv7s"
+
+	copy_modulemap_paths $DESTINATION $IPHONE_SIMULATOR_BUILD_DIR "x86_64"
+	copy_modulemap_paths $DESTINATION $IPHONE_SIMULATOR_BUILD_DIR "i386"
+}
 ### Script Logic
 
 # Copy the swiftmodule and swiftdoc for all available architectures.
 copy_swiftmodule
+
+# Copy the generated module.modulemap files.
+copy_modulemap

@@ -134,6 +134,9 @@ prepare_build
 # Build archs: i386 x86_6 arm64 armv7 armv7s
 build_all_architectures
 
+# Copy the swiftmodule and swiftdoc for all available architectures.
+copy_swiftmodule
+
 # Combine all architectures.
 create_universal_file
 
@@ -148,5 +151,3 @@ create_universal_file
 # Validate Frameworks.
 validate_frameworks
 
-# Copy the swiftmodule and swiftdoc for all available architectures.
-copy_swiftmodule

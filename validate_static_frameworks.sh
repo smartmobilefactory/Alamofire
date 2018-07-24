@@ -41,68 +41,71 @@ function usage() {
     exit 1
 }
 
-function valid_ios() {
-	local VALID=1
-	local BUILD_DIR="${IOS_BUILD_DIR}"
-	local LIB_BIN="${BUILD_DIR}/${FRAMEWORK_BIN}"
+function validate_bitcode() {
+	ARCH=$1
+	LIB_BIN=$2
 
-	echo "Validating ${FRAMEWORK} at path: ${IOS_BUILD_DIR}"
+	local REZ=$($OTOOL_B -arch ${ARCH} -l "${LIB_BIN}" | $GREP_B -i LLVM)
+	if [ "$REZ" == "" ]; then
+		echo "ERROR: Did not find bitcode slice for ${ARCH}"
+		VALID=0
+	else
+		echo " GOOD: Found bitcode slice for ${ARCH}"
+	fi
 
-	if [ -r "${LIB_BIN}" ]; then
-		# Check expected architectures
-		local REZ=$($LIPO_B -info "${LIB_BIN}")
-		if [ "$REZ" != "Architectures in the fat file: ${LIB_BIN} are: i386 x86_64 armv7 armv7s arm64 " ]; then
+	return "$VALID"
+}
+
+function validate_modulemap() {
+	BUILD_DIR=$1
+
+	local EXPECTING=("${BUILD_DIR}/${FRAMEWORK}/Modules/module.modulemap")
+	for EXPECT in ${EXPECTING[*]}
+	do
+		if [ -f "${EXPECT}" ]; then
+			echo " GOOD: Found expected file: \"${EXPECT}\""
+		else
+			echo "ERROR: Did not file expected file: \"${EXPECT}\""
+			VALID=0
+		fi
+	done
+
+	return "$VALID"
+}
+
+function validate_static_framework() {
+	LIB_BIN=$1
+
+	local FILEINFO=$($FILE_B -L "${LIB_BIN}" | $GREP_B -i "current ar archive")
+	if [ "$FILEINFO" == "" ]; then
+		echo "ERROR: Unexpected result from $FILE_B: \"${FILEINFO}\""
+		VALID=0
+	else
+		echo " GOOD: ${FILEINFO}"
+	fi
+
+	return "$VALID"
+}
+
+function validate_architecture() {
+	LIB_BIN=$1
+	ARCH=$2
+
+	local REZ=$($LIPO_B -info "${LIB_BIN}" | $GREP_B -i "architecture")
+	if [ "$REZ" == "" ]; then
+		echo "ERROR: Unexpected architecture for: \"${REZ}\""
+		VALID=0
+	else
+		REZ=$($LIPO_B -info "${LIB_BIN}" | $GREP_B -i "${ARCH}")
+		if [ "$REZ" == "" ]; then
 			echo "ERROR: Unexpected result from $LIPO_B: \"${REZ}\""
 			VALID=0
 		else
 			echo " GOOD: ${REZ}"
 		fi
-
-		# Check for bitcode where expected
-		local ARCHS=("arm64" "armv7" "armv7s")
-		for ARCH in ${ARCHS[*]}
-		do
-			local REZ=$($OTOOL_B -arch ${ARCH} -l "${LIB_BIN}" | $GREP_B LLVM)
-			if [ "$REZ" == "" ]; then
-				echo "ERROR: Did not find bitcode slice for ${ARCH}"
-				VALID=0
-			else
-				echo " GOOD: Found bitcode slice for ${ARCH}"
-			fi
-		done
-
-		# Check for bitcode where not expected
-		local ARCHS=("i386")
-		for ARCH in ${ARCHS[*]}
-		do
-			local REZ=$($OTOOL_B -arch ${ARCH} -l "${LIB_BIN}" | $GREP_B LLVM)
-			if [ "$REZ" != "" ]; then
-				echo "ERROR: Found bitcode slice for ${ARCH}"
-				VALID=0
-			else
-				echo " GOOD: Did not find bitcode slice for ${ARCH}"
-			fi
-		done
-
-		local EXPECTING=("${BUILD_DIR}/${FRAMEWORK}/Modules/module.modulemap")
-		for EXPECT in ${EXPECTING[*]}
-		do
-			if [ -f "${EXPECT}" ]; then
-				echo " GOOD: Found expected file: \"${EXPECT}\""
-			else
-				echo "ERROR: Did not file expected file: \"${EXPECT}\""
-				VALID=0
-			fi
-		done
-
-	else
-		echo "ERROR: \"${LIB_BIN}\" not found. Please be sure it has been built (see README.md)"
-		VALID=0
 	fi
 
-	if [ $VALID -ne 1 ]; then
-		fail "Invalid framework"
-	fi
+	return "$VALID"
 }
 
 function validate() {
@@ -114,41 +117,18 @@ function validate() {
 	echo "Validating ${FRAMEWORK} at path: ${BUILD_DIR}"
 
 	if [ -r "${LIB_BIN}" ]; then
-		# Check expected architectures
-		local REZ=$($LIPO_B -info "${LIB_BIN}" | $GREP_B "is architecture")
-		if [ "$REZ" != "Non-fat file: ${LIB_BIN} is architecture: ${ARCH}" ]; then
-			echo "ERROR: Unexpected result from $LIPO_B: \"${REZ}\""
-			VALID=0
-		else
-			echo " GOOD: ${REZ}"
-		fi
 
-		local FILEINFO=$($FILE_B -L "${LIB_BIN}")
-		if [ "$FILEINFO" != "${LIB_BIN}: current ar archive" ]; then
-			echo "ERROR: Unexpected result from $FILE_B: \"${FILEINFO}\""
-			VALID=0
-		else
-			echo " GOOD: ${FILEINFO}"
-		fi
+		validate_architecture $LIB_BIN $ARCH
+		VALID=$?
 
-		local EXPECTING=("${BUILD_DIR}/${FRAMEWORK}/Modules/module.modulemap")
-		for EXPECT in ${EXPECTING[*]}
-		do
-			if [ -f "${EXPECT}" ]; then
-				echo " GOOD: Found expected file: \"${EXPECT}\""
-			else
-				echo "ERROR: Did not file expected file: \"${EXPECT}\""
-				VALID=0
-			fi
-		done
+		validate_static_framework $LIB_BIN
+		VALID=$?
 
-		local REZ=$($OTOOL_B -arch ${ARCH} -l "${LIB_BIN}" | $GREP_B LLVM)
-			if [ "$REZ" != "" ]; then
-				echo "ERROR: Found bitcode slice for ${ARCH}"
-				VALID=0
-			else
-				echo " GOOD: Did not find bitcode slice for ${ARCH}"
-			fi
+		validate_modulemap $BUILD_DIR
+		VALID=$?
+
+		validate_bitcode $ARCH $LIB_BIN
+		VALID=$?
 
 	else
 		echo "ERROR: \"${LIB_BIN}\" not found. Please be sure it has been built (see README.md)"
@@ -170,7 +150,11 @@ for i in "$@"
 do
 case $i in
 	iOS)
-		valid_ios
+		validate "${IOS_BUILD_DIR}" "arm64"
+		validate "${IOS_BUILD_DIR}" "x86_64"
+		validate "${IOS_BUILD_DIR}" "armv7"
+		validate "${IOS_BUILD_DIR}" "armv7s"
+		validate "${IOS_BUILD_DIR}" "i386"
 	;;
 	macOS)
 		validate "${MAC_BUILD_DIR}" "x86_64"

@@ -1241,7 +1241,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "${SRCROOT}/validate_static_frameworks.sh iOS";
+			shellScript = "# Frameworks are validated during the \"Create Universal Framework\" build phase.\n# ${SRCROOT}/validate_static_frameworks.sh iOS";
 		};
 		75436E1621071CDD006B46A1 /* Create Universal Framework */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1269,7 +1269,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -xe\nexport BUILD_PATH=\"${SRCROOT}/Frameworks/Static/iOS/\";\nrm -rf \"${BUILD_PATH}\";\nmkdir -p \"${BUILD_PATH}\";\nditto \"${BUILT_PRODUCTS_DIR}\" \"${BUILD_PATH}\";";
+			shellScript = "${SRCROOT}/build_framework_ios.sh";
 		};
 		75436E1821071ED4006B46A1 /* Create Universal Framework */ = {
 			isa = PBXShellScriptBuildPhase;

@@ -63,7 +63,7 @@ def carthage_update():
 	# Export/Overwrite the default xcode config file.
 	export = ('export XCODE_XCCONFIG_FILE="%s"' % xcconfig)
 	# Finally build the binaries statically using Carthage
-	build = 'carthage update --platform iOS'
+	build = 'carthage update'
 
 	# Use os.system to run all commands inside the same environment.
 	command_line = " ; ".join([trap, export, build])
@@ -92,6 +92,7 @@ def link_binaries(arguments):
 		"-filelist", arguments.filelist,
 		"-o", arguments.output
 	]
+	# Print command line and output as stdout is redirected onto a log file.
 	print(" ".join(libtool_command))
 	print(subprocess.check_output(libtool_command))
 
@@ -100,6 +101,7 @@ def build_binaries(arguments):
 	carthage_update()
 	retain_binaries()
 	remove_carthage_from_repository()
+
 #
 # Script Logic
 #

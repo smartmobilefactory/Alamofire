@@ -3,21 +3,38 @@
 import argparse
 import os
 import subprocess
+import sys
 
 #
-# Static Configuration
+# TODO
 #
 
+# TODO: check if Carthage is installed.
+# TODO: redirect script to root path when executing from outside folder.
+# TODO: custom help message
+# TODO: commit_changes/release new binaries
 
 #
 # Function Declaration
 #
 
-def static_build_parser():
+def parser():
 	parser = argparse.ArgumentParser(description='Build and release a static framework')
-	parser.add_argument('--path', help="Path to the root of the related repository.", required=True, default=None)
-	parser.add_argument('--product', help="Github product name. Example: 'Alamofire/Alamofire'.", required=True, default=None)
-	parser.add_argument('--version', help="Product's version.", required=True, default=None)
+	subparsers = parser.add_subparsers(help='Available commands')
+
+	# Static Build: Automatically executed by xcodebuild
+	link_parser = subparsers.add_parser('link', help='Statically link binaries. Used by xcodebuild.')
+	link_parser.add_argument("-arch", required=True, default=None)
+	link_parser.add_argument("-isysroot", required=True, default=None)
+	link_parser.add_argument("-filelist", required=True, default=None)
+	link_parser.add_argument("-o", dest="output", required=True)
+
+	# Dynamic Build: Manually executed.
+	build_parser = subparsers.add_parser('build', help='Build Static Framework')
+	build_parser.add_argument('--path', help="Path to the root of the related repository.", required=True, default=None)
+	build_parser.add_argument('--product', help="Github product name. Example: 'Alamofire/Alamofire'.", required=True, default=None)
+	build_parser.add_argument('--version', help="Product's version.", required=True, default=None)
+
 	return parser
 
 def create_cartfile(root, product_name, product_version):
@@ -35,7 +52,7 @@ def create_cartfile(root, product_name, product_version):
 def carthage_update():
 	# Execute carthage update to locally build the dynamic framework.
 	subprocess.call(['carthage', 'update'])
-	# Staticly link the binaries.
+	# Statically link the binaries.
 	subprocess.call(['./static_link.sh'])
 
 def remove_carthage_from_repository():
@@ -52,6 +69,17 @@ def retain_binaries():
 	# Retain buitl binaries
 	subprocess.call(['mv', 'Carthage/Build', 'Releases'])
 
+def link_binaries(arguments):
+	libtool_command = [
+		"libtool",
+		"-static",
+		"-arch_only", arguments.arch,
+		"-syslibroot", arguments.isysroot,
+		"-filelist", arguments.filelist,
+		"-o", arguments.output
+	]
+	print(" ".join(libtool_command))
+	print(subprocess.check_output(libtool_command))
 
 #
 # Script Logic
@@ -59,21 +87,19 @@ def retain_binaries():
 
 if __name__ == "__main__":
 
-	args, _ = static_build_parser().parse_known_args()
-	# args = vars(parser.parse_args())
-	root_path = args.path #['path']
-	product_name = args.product # ['product']
-	product_version = args.version #[ 'version']
+	if 'build' not in sys.argv and '-h' not in sys.argv and '--help' not in sys.argv:
+		sys.argv.insert(1, 'link')
 
-	# TODO: check if Carthage is installed.
-	# TODO: redirect script to root path when executing from outside folder.
+	args, here = parser().parse_known_args()
 
-	create_cartfile(root_path, product_name, product_version)
+	if hasattr(args, 'arch') and hasattr(args, 'isysroot') and hasattr(args, 'filelist') and hasattr(args, 'output'):
+		link_binaries(args)
 
-	carthage_update()
-
-	retain_binaries()
-
-	remove_carthage_from_repository()
-
-	# commit_changes/release new binaries
+	elif hasattr(args, 'path') and hasattr(args, 'product') and hasattr(args, 'version'):
+		create_cartfile(args.path, args.product, args.version)
+		carthage_update()
+		retain_binaries()
+		remove_carthage_from_repository()
+	else:
+		print("Error Invalid Arguments.")
+		exit(1)

@@ -6,15 +6,19 @@ import subprocess
 import sys
 
 #
-# TODO
-#
-
-# TODO: redirect script to root path when executing from outside folder.
-# TODO: commit_changes/release new binaries
-
-#
 # Function Declaration
 #
+
+# Common
+
+def check_required_dependencies():
+	required_dependencies = ['carthage', 'mktemp', 'trap', 'rm', 'export', 'mv', 'libtool', 'touch']
+	for dependency in required_dependencies:
+		try:
+			subprocess.check_output(['command', '-v', dependency])
+		except subprocess.CalledProcessError as error:
+			print("Error: '%s' not found" % dependency)
+			exit(1)
 
 def parser():
 	parser = argparse.ArgumentParser(description='Build and release a static framework')
@@ -35,8 +39,10 @@ def parser():
 
 	return parser
 
+# Build
+
 def create_cartfile(root, product_name, product_version):
-	path = 'Cartfile'
+	path = root + '/Cartfile'
 	dependency = ('github "%s" == %s' % (product_name, product_version))
 	# Remove existing file
 	subprocess.call(['rm', '-rf', path])
@@ -47,7 +53,7 @@ def create_cartfile(root, product_name, product_version):
 	cartfile.write(dependency)
 	cartfile.close()
 
-def carthage_update():
+def carthage_update(root):
 	# Create a temporary xcconfig file.
 	xcconfig = subprocess.check_output(['mktemp', '/tmp/static.xcconfig.XXXXXX']).strip()
 	# Setup custom xcode build configurations.
@@ -56,6 +62,8 @@ def carthage_update():
 	file.write("DEBUG_INFORMATION_FORMAT = dwarf\n")
 	file.close()
 
+	# Redirect the script execution to the root of the folder (where the Cartfile is).
+	cd = ('cd %s' % root)
 	# Remove temporary file after process.
 	trap = ("trap 'rm -f \"%s\"' INT TERM HUP EXIT" % xcconfig)
 	# Export/Overwrite the default xcode config file.
@@ -64,22 +72,31 @@ def carthage_update():
 	build = 'carthage update'
 
 	# Use os.system to run all commands inside the same environment.
-	command_line = " ; ".join([trap, export, build])
+	command_line = " ; ".join([cd, trap, export, build])
 	os.system(command_line)
 
-def remove_carthage_from_repository():
+def remove_carthage_from_repository(root):
 	# Remove Cartfile file
-	subprocess.call(['rm', '-rf', 'Cartfile'])
+	subprocess.call(['rm', '-rf', root + '/Cartfile'])
 	# Remove Cartfile.resolved file
-	subprocess.call(['rm', '-rf', 'Cartfile.resolved'])
+	subprocess.call(['rm', '-rf', root + '/Cartfile.resolved'])
 	# Remove Cathage folder
-	subprocess.call(['rm', '-rf', 'Carthage'])
+	subprocess.call(['rm', '-rf', root + '/Carthage'])
 
-def retain_binaries():
+def retain_binaries(root):
 	# Remove any existing 'Releases' folder
-	subprocess.call(['rm', '-rf', 'Releases'])
+	subprocess.call(['rm', '-rf', root + '/Releases'])
 	# Retain buitl binaries
-	subprocess.call(['mv', 'Carthage/Build', 'Releases'])
+	subprocess.call(['mv', root + '/Carthage/Build', root + '/Releases'])
+
+def build_binaries(arguments):
+	root = arguments.path
+	create_cartfile(root, arguments.product, arguments.version)
+	carthage_update(root)
+	retain_binaries(root)
+	remove_carthage_from_repository(root)
+
+# Link
 
 def link_binaries(arguments):
 	libtool_command = [
@@ -93,21 +110,6 @@ def link_binaries(arguments):
 	# Print command line and output as stdout is redirected onto a log file.
 	print(" ".join(libtool_command))
 	print(subprocess.check_output(libtool_command))
-
-def build_binaries(arguments):
-	create_cartfile(arguments.path, arguments.product, arguments.version)
-	carthage_update()
-	retain_binaries()
-	remove_carthage_from_repository()
-
-def check_required_dependencies():
-	required_dependencies = ['carthage', 'mktemp', 'trap', 'rm', 'export', 'mv', 'libtool', 'touch']
-	for dependency in required_dependencies:
-		try:
-			subprocess.check_output(['command', '-v', dependency])
-		except subprocess.CalledProcessError as error:
-			print("Error: '%s' not found" % dependency)
-			exit(1)
 
 #
 # Script Logic

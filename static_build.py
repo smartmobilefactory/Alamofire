@@ -50,10 +50,24 @@ def create_cartfile(root, product_name, product_version):
 	cartfile.close()
 
 def carthage_update():
-	# Execute carthage update to locally build the dynamic framework.
-	# subprocess.call(['carthage', 'update'])
-	# Statically link the binaries.
-	subprocess.call(['./static_link.sh'])
+	# Create a temporary xcconfig file.
+	xcconfig = subprocess.check_output(['mktemp', '/tmp/static.xcconfig.XXXXXX']).strip()
+	# Setup custom xcode build configurations.
+	file = open(xcconfig,'w')
+	file.write("LD = %s\n" % os.path.realpath(__file__))
+	file.write("DEBUG_INFORMATION_FORMAT = dwarf\n")
+	file.close()
+
+	# Remove temporary file after process.
+	trap = ("trap 'rm -f \"%s\"' INT TERM HUP EXIT" % xcconfig)
+	# Export/Overwrite the default xcode config file.
+	export = ('export XCODE_XCCONFIG_FILE="%s"' % xcconfig)
+	# Finally build the binaries statically using Carthage
+	build = 'carthage update --platform iOS'
+
+	# Use os.system to run all commands inside the same environment.
+	command_line = " ; ".join([trap, export, build])
+	os.system(command_line)
 
 def remove_carthage_from_repository():
 	# Remove Cartfile file

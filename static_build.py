@@ -38,20 +38,20 @@ def parser():
 	return parser
 
 def create_cartfile(root, product_name, product_version):
-	# Remove existing Cartfile.resolved
-	subprocess.call(['rm', '-rf', 'Cartfile.resolved'])
-	subprocess.call(['rm', '-rf', 'Cartfile'])
-	# Create new empty Cartfile
-	subprocess.call(['touch', 'Cartfile'])
-	# Write dependency inside the Cartfile
+	path = 'Cartfile'
 	dependency = ('github "%s" == %s' % (product_name, product_version))
-	cartfile = open('Cartfile','w')
+	# Remove existing file
+	subprocess.call(['rm', '-rf', path])
+	# Create new empty file
+	subprocess.call(['touch', path])
+	# Write dependency inside the file
+	cartfile = open(path,'w')
 	cartfile.write(dependency)
 	cartfile.close()
 
 def carthage_update():
 	# Execute carthage update to locally build the dynamic framework.
-	subprocess.call(['carthage', 'update'])
+	# subprocess.call(['carthage', 'update'])
 	# Statically link the binaries.
 	subprocess.call(['./static_link.sh'])
 
@@ -81,6 +81,11 @@ def link_binaries(arguments):
 	print(" ".join(libtool_command))
 	print(subprocess.check_output(libtool_command))
 
+def build_binaries(arguments):
+	create_cartfile(arguments.path, arguments.product, arguments.version)
+	carthage_update()
+	retain_binaries()
+	remove_carthage_from_repository()
 #
 # Script Logic
 #
@@ -88,6 +93,8 @@ def link_binaries(arguments):
 if __name__ == "__main__":
 
 	if 'build' not in sys.argv and '-h' not in sys.argv and '--help' not in sys.argv:
+		# Xcodebuild does not use the custom 'link' command.
+		# If neither 'build' or 'help' is in use, add the 'link' parameter to force the logic.
 		sys.argv.insert(1, 'link')
 
 	args, here = parser().parse_known_args()
@@ -96,10 +103,7 @@ if __name__ == "__main__":
 		link_binaries(args)
 
 	elif hasattr(args, 'path') and hasattr(args, 'product') and hasattr(args, 'version'):
-		create_cartfile(args.path, args.product, args.version)
-		carthage_update()
-		retain_binaries()
-		remove_carthage_from_repository()
+		build_binaries(args)
 	else:
 		print("Error Invalid Arguments.")
 		exit(1)

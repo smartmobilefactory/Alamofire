@@ -8,4 +8,4 @@ echo "DEBUG_INFORMATION_FORMAT = dwarf" >> $xcconfig
 
 export XCODE_XCCONFIG_FILE="$xcconfig"
 
-carthage build "$@"
+carthage update

@@ -13,11 +13,9 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = '9.0'
   s.watchos.deployment_target = '2.0'
 
-  s.source_files = 'Frameworks/Frameworks.swift'
-
-  s.ios.vendored_frameworks = 'Frameworks/Static/iOS/Alamofire.framework'
-  s.osx.vendored_frameworks = 'Frameworks/Static/Mac/Alamofire.framework'
-  s.tvos.vendored_frameworks = 'Frameworks/Static/tvOS/Alamofire.framework'
-  s.watchos.vendored_frameworks = 'Frameworks/Static/watchOS/Alamofire.framework'
+  s.ios.vendored_frameworks = 'Releases/iOS/Alamofire.framework'
+  s.osx.vendored_frameworks = 'Releases/Mac/Alamofire.framework'
+  s.tvos.vendored_frameworks = 'Releases/tvOS/Alamofire.framework'
+  s.watchos.vendored_frameworks = 'Releases/watchOS/Alamofire.framework'
 
 end

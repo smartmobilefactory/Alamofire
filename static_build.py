@@ -9,9 +9,7 @@ import sys
 # TODO
 #
 
-# TODO: check if Carthage is installed.
 # TODO: redirect script to root path when executing from outside folder.
-# TODO: custom help message
 # TODO: commit_changes/release new binaries
 
 #
@@ -102,11 +100,22 @@ def build_binaries(arguments):
 	retain_binaries()
 	remove_carthage_from_repository()
 
+def check_required_dependencies():
+	required_dependencies = ['carthage', 'mktemp', 'trap', 'rm', 'export', 'mv', 'libtool', 'touch']
+	for dependency in required_dependencies:
+		try:
+			subprocess.check_output(['command', '-v', dependency])
+		except subprocess.CalledProcessError as error:
+			print("Error: '%s' not found" % dependency)
+			exit(1)
+
 #
 # Script Logic
 #
 
 if __name__ == "__main__":
+
+	check_required_dependencies()
 
 	if 'build' not in sys.argv and '-h' not in sys.argv and '--help' not in sys.argv:
 		# Xcodebuild does not use the custom 'link' command.

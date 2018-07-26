@@ -18,4 +18,6 @@ Pod::Spec.new do |s|
   s.tvos.vendored_frameworks = 'Releases/tvOS/Alamofire.framework'
   s.watchos.vendored_frameworks = 'Releases/watchOS/Alamofire.framework'
 
+  s.static_framework = true
+
 end

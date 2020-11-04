@@ -1,3 +1,10 @@
+:warning: This is a hotfix fork of Alamofire to enable support for BackgroundSessions :warning:
+- It is based on 4.9.1.
+- This is a temporary solution.
+- Use at your own risks.
+
+---
+
 ![Alamofire: Elegant Networking in Swift](https://raw.githubusercontent.com/Alamofire/Alamofire/master/alamofire.png)
 
 [![Build Status](https://travis-ci.org/Alamofire/Alamofire.svg?branch=master)](https://travis-ci.org/Alamofire/Alamofire)

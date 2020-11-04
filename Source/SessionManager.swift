@@ -129,6 +129,10 @@ open class SessionManager {
     /// Whether to start requests immediately after being constructed. `true` by default.
     open var startRequestsImmediately: Bool = true
 
+	/// Whether or not to invalidate and cancel the active tasks during deinit.
+	/// If using a background session, this should be set to false.
+	open var shouldInvalidateSessionOnDeinit: Bool = true
+
     /// The request adapter called each time a new request is created.
     open var adapter: RequestAdapter?
 
@@ -207,7 +211,9 @@ open class SessionManager {
     }
 
     deinit {
-        session.invalidateAndCancel()
+        if shouldInvalidateSessionOnDeinit {
+            session.invalidateAndCancel()
+        }
     }
 
     // MARK: - Data Request

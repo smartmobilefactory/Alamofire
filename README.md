@@ -1,7 +1,7 @@
 :warning: This is a hotfix fork of Alamofire to enable support for BackgroundSessions :warning:
 - It is based on 4.9.1.
-- This is a temporary solution.
-- Use at your own risks.
+- This is a temporary solution, migration to 5.x is not planned
+- No support will be provided, use at your own risks.
 
 ---
 

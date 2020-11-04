@@ -1,5 +1,6 @@
 Pod::Spec.new do |s|
-  s.name = 'Alamofire'
+  s.name = 'SMF-Alamofire'
+  s.module_name = 'Alamofire'
   s.version = '4.9.1.1'
   s.license = 'MIT'
   s.summary = 'Elegant HTTP Networking in Swift'
